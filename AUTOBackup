@@ -1,0 +1,19 @@
+#!/bin/bash
+# AUTOBackup - @jakkunight (Jakku Night)
+# Script para hacer un backup de VM's en Proxmox a carpeta compartida vía SAMBA.
+
+# Define el ID de la máquina virtual a utilizar (VMID). Por defecto es el ID 100:
+VMID=100
+
+# Se debe configurar la unidad SMB.
+# Se requieren la IP del servidor SAMBA (SERVER), un alias para montar la unidad (NAME) y el nombre del recurso al que se desea acceder (SHARED).
+SERVER=127.0.0.1
+NAME="smb_backups"
+SHARED="backups"
+
+# Montaje de la unidad:
+mkdir /mnt/$NAME
+mount -t cifs //$SERVER/$SHARED /mnt/$NAME
+
+# Realiza el backup con VZDUMP:
+/usr/bin/vzdump $VMID --compress gzip --dumpdir /mnt/$NAME/$SHARED
